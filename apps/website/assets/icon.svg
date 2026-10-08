@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Orange rounded square, same as SnipURL's icon; keyboard glyph instead of the link. -->
+  <rect width="32" height="32" rx="7" fill="#ea580c"/>
+  <g fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="6" y="10" width="20" height="12" rx="2.2"/>
+  </g>
+  <g fill="#fff">
+    <rect x="9" y="13" width="2" height="2" rx=".5"/>
+    <rect x="12.5" y="13" width="2" height="2" rx=".5"/>
+    <rect x="16" y="13" width="2" height="2" rx=".5"/>
+    <rect x="19.5" y="13" width="2" height="2" rx=".5"/>
+    <rect x="11" y="18" width="10" height="1.8" rx=".9"/>
+  </g>
+</svg>

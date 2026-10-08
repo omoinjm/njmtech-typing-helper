@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en" style="color-scheme: dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Typing Helper</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 20 14" width="22" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="1" width="18" height="12" rx="2.2" />
+            <path d="M5 5h.01M8.3 5h.01M11.6 5h.01M15 5h.01M6.5 9h7" stroke-width="2" />
+          </svg>
+        </div>
+        <h1>Typing Helper</h1>
+        <p class="subtitle">Auto-type on any typing test</p>
+        <span id="site" class="pill">Detecting…</span>
+      </div>
+
+      <section class="card" aria-labelledby="card-title">
+        <header>
+          <p id="card-title" class="card-title">Typing settings</p>
+          <p class="card-description">Pick a speed and accuracy, then press Start on a typing test</p>
+        </header>
+
+        <div class="field">
+          <div class="label-row">
+            <label for="wpm">Speed</label>
+            <span class="value"><output id="wpmOut" for="wpm"></output> WPM</span>
+          </div>
+          <input id="wpm" type="range" min="10" max="250" step="5" />
+        </div>
+
+        <div class="field">
+          <div class="label-row">
+            <label for="accuracy">Accuracy</label>
+            <span class="value"><output id="accOut" for="accuracy"></output>%</span>
+          </div>
+          <input id="accuracy" type="range" min="80" max="100" step="1" />
+        </div>
+
+        <div class="field">
+          <label for="mode">Key events</label>
+          <select id="mode">
+            <option value="auto">Auto</option>
+            <option value="dom">DOM (all browsers)</option>
+            <option value="trusted">Trusted (Chromium)</option>
+          </select>
+        </div>
+
+        <button id="toggle" class="btn btn-primary" type="button">Start typing</button>
+        <button id="pick" class="btn btn-outline" type="button">Pick text area</button>
+
+        <div id="status" class="status" aria-live="polite" aria-atomic="true" hidden>
+          <p class="status-label">Status</p>
+          <p id="detail" class="status-text"></p>
+        </div>
+      </section>
+
+      <p class="footer"><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> start/stop · <kbd>Esc</kbd> stops</p>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

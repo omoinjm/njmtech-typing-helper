@@ -1,0 +1,90 @@
+/* Visual language matches SnipURL (s.njmtech.co.za): near-black page with an
+   orange radial glow, orange-600 logo tile, glassy white/3% card, zinc text. */
+:root {
+  --bg: #0a0a0a;
+  --fg: #ffffff;
+  --zinc-300: #d4d4d8;
+  --zinc-400: #a1a1aa;
+  --zinc-500: #71717a;
+  --zinc-600: #52525b;
+  --orange-300: #fdba74;
+  --orange-400: #fb923c;
+  --orange-500: #f97316;
+  --orange-600: #ea580c;
+  --line: rgba(255, 255, 255, 0.1);
+  --card-line: rgba(255, 255, 255, 0.06);
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --field-bg: rgba(255, 255, 255, 0.05);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  width: 340px;
+  margin: 0;
+  background: var(--bg) radial-gradient(ellipse 80% 50% at 50% -10%, rgba(234, 88, 12, 0.15), transparent);
+  color: var(--fg);
+  font: 14px/1.4 Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+main { display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 24px 16px 16px; }
+
+.brand { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.logo {
+  display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--orange-600); color: #fff;
+  box-shadow: 0 10px 15px -3px rgba(124, 45, 18, 0.4), 0 4px 6px -4px rgba(124, 45, 18, 0.4);
+}
+h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.025em; }
+.subtitle { margin: -4px 0 0; font-size: 13px; color: var(--zinc-500); }
+.pill {
+  margin-top: 2px; padding: 4px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--field-bg);
+  font-size: 12px; color: var(--zinc-400); max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pill.ok { border-color: rgba(249, 115, 22, 0.3); background: rgba(249, 115, 22, 0.1); color: var(--orange-400); }
+
+.card {
+  width: 100%; padding: 20px; border-radius: 12px;
+  border: 1px solid var(--card-line); background: var(--card-bg);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex; flex-direction: column; gap: 14px;
+}
+.card-title { margin: 0; font-size: 16px; font-weight: 600; line-height: 1; }
+.card-description { margin: 6px 0 0; font-size: 13px; color: var(--zinc-500); }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.label-row { display: flex; justify-content: space-between; align-items: baseline; }
+label { font-size: 14px; color: var(--zinc-300); }
+.value { font-size: 13px; color: var(--orange-400); font-variant-numeric: tabular-nums; }
+
+input[type='range'] { width: 100%; margin: 4px 0; accent-color: var(--orange-600); }
+
+select {
+  height: 36px; padding: 0 10px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--field-bg); color: var(--fg); font: inherit;
+}
+select option { background: #18181b; }
+select:focus-visible { outline: none; border-color: var(--orange-500); box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2); }
+
+.btn {
+  height: 36px; width: 100%; border-radius: 6px; cursor: pointer;
+  font: 500 14px/1 Arial, Helvetica, sans-serif; transition: background-color .15s, border-color .15s, color .15s;
+}
+.btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.4); }
+.btn-primary { border: 0; background: var(--orange-600); color: #fff; }
+.btn-primary:hover { background: var(--orange-500); }
+.btn-primary.running { background: transparent; border: 1px solid rgba(249, 115, 22, 0.4); color: var(--orange-400); }
+.btn-outline { margin-top: -6px; border: 1px solid var(--line); background: var(--field-bg); color: var(--zinc-300); }
+.btn-outline:hover { border-color: rgba(249, 115, 22, 0.3); background: rgba(249, 115, 22, 0.1); color: var(--orange-400); }
+
+.status { padding: 12px; border-radius: 8px; border: 1px solid rgba(249, 115, 22, 0.2); background: rgba(249, 115, 22, 0.05); }
+.status-label { margin: 0 0 4px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange-400); }
+.status-text { margin: 0; font-size: 13px; color: var(--orange-300); }
+
+.footer { margin: 0; font-size: 12px; color: var(--zinc-600); }
+kbd { font: inherit; padding: 0 4px; border: 1px solid var(--line); border-radius: 4px; color: var(--zinc-500); }

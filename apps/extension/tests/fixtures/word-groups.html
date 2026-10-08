@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head><meta charset="utf-8" /><title>Fixture: word groups + keydown only</title></head>
+  <body>
+    <div id="words"></div>
+    <div class="keyboard" id="kb"></div>
+    <p id="result"></p>
+    <script>
+      // Mimics Monkeytype/keybr: words are groups of letter elements with no space elements,
+      // there is an on-screen keyboard, and input comes from document keydown only.
+      const passage = 'sphinx of black quartz judge my vow';
+      const words = document.getElementById('words');
+      for (const w of passage.split(' ')) {
+        const d = document.createElement('div');
+        d.className = 'word';
+        for (const ch of w) {
+          const l = document.createElement('letter');
+          l.textContent = ch;
+          d.append(l);
+        }
+        words.append(d);
+      }
+      const kb = document.getElementById('kb');
+      for (const k of 'qwertyuiopasdfghjklzxcvbnm') {
+        const key = document.createElement('div');
+        key.className = 'key';
+        key.textContent = k;
+        kb.append(key);
+      }
+      const letters = [...words.querySelectorAll('letter')];
+      let typed = '';
+      let start = 0;
+      document.addEventListener('keydown', (e) => {
+        if (e.key.length !== 1 && e.key !== 'Backspace') return;
+        if (!start) start = performance.now();
+        typed = e.key === 'Backspace' ? typed.slice(0, -1) : typed + e.key;
+        const letterOnly = typed.replace(/ /g, '');
+        letters.forEach((l, i) => (l.className = i < letterOnly.length ? 'correct' : ''));
+        if (typed === passage) {
+          const wpm = passage.length / 5 / ((performance.now() - start) / 60000);
+          document.getElementById('result').textContent = 'done ' + Math.round(wpm);
+        }
+      });
+    </script>
+  </body>
+</html>

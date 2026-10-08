@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head><meta charset="utf-8" /><title>Fixture: char spans + input</title>
+    <style>.typed{color:green}.wrong{color:red}.current{text-decoration:underline}</style>
+  </head>
+  <body>
+    <div id="text"></div>
+    <input id="box" autocomplete="off" />
+    <p id="result"></p>
+    <script>
+      // Mimics sites like typing.com/ratatype: one <span> per char, progress via classes, visible input.
+      const passage = 'Pack my box with five dozen liquor jugs.';
+      const text = document.getElementById('text');
+      for (const ch of passage) {
+        const s = document.createElement('span');
+        s.className = 'char';
+        s.textContent = ch === ' ' ? ' ' : ch;
+        text.append(s);
+      }
+      const spans = [...text.children];
+      const box = document.getElementById('box');
+      let start = 0;
+      box.addEventListener('input', () => {
+        if (!start) start = performance.now();
+        const v = box.value;
+        spans.forEach((s, i) => {
+          s.className = 'char' + (i < v.length ? (v[i] === passage[i] ? ' typed' : ' wrong') : i === v.length ? ' current' : '');
+        });
+        if (v === passage) {
+          const wpm = passage.length / 5 / ((performance.now() - start) / 60000);
+          document.getElementById('result').textContent = 'done ' + Math.round(wpm);
+          box.disabled = true;
+        }
+      });
+    </script>
+  </body>
+</html>

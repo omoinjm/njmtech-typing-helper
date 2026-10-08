@@ -1,0 +1,16 @@
+name = "typing-helper-api"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+# --- Custom domain ---------------------------------------------------------
+# Requires njmtech.co.za to be an active zone on this Cloudflare account.
+routes = [
+  { pattern = "api.typing.njmtech.co.za", custom_domain = true }
+]
+
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true

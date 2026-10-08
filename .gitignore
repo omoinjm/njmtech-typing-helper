@@ -1,0 +1,13 @@
+node_modules/
+.wrangler/
+dist/
+.output/
+.wxt/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+test-results/
+playwright-report/
+blob-report/
