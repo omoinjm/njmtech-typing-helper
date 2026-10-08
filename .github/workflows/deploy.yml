@@ -66,5 +66,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/worker
           packageManager: pnpm
+          # apps/worker has no package.json, so `pnpm exec` runs from the repo
+          # root — point wrangler at the config explicitly.
+          command: deploy --config apps/worker/wrangler.toml
