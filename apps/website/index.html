@@ -29,10 +29,34 @@
         </p>
         <div class="pills">
           <a class="pill" href="#install">Install</a>
+          <a class="pill" href="#features">Features</a>
           <a class="pill" href="#sites">Supported sites</a>
-          <a class="pill" href="https://github.com/omoinjm/njmtech-typing-helper" target="_blank" rel="noopener noreferrer">GitHub <span id="stat-stars"></span></a>
+          <a class="pill" href="https://github.com/omoinjm/njmtech-typing-helper" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
       </div>
+
+      <a class="stats" id="repo-stats" href="https://github.com/omoinjm/njmtech-typing-helper" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository stats" aria-live="polite">
+        <div class="stat">
+          <svg class="stat-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .9l2.2 4.5 4.9.7-3.6 3.5.9 4.9L8 12.2l-4.4 2.3.9-4.9L.9 6.1l4.9-.7z" fill="currentColor"/></svg>
+          <span class="stat-value" id="stat-stars">—</span>
+          <span class="stat-label">Stars</span>
+        </div>
+        <div class="stat">
+          <svg class="stat-icon" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="4" cy="3" r="1.6"/><circle cx="12" cy="3" r="1.6"/><circle cx="8" cy="13" r="1.6"/><path d="M4 4.6v1.4c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2V4.6M8 8v3.4"/></svg>
+          <span class="stat-value" id="stat-forks">—</span>
+          <span class="stat-label">Forks</span>
+        </div>
+        <div class="stat">
+          <svg class="stat-icon" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="1.4" fill="currentColor" stroke="none"/></svg>
+          <span class="stat-value" id="stat-issues">—</span>
+          <span class="stat-label">Open issues</span>
+        </div>
+        <div class="stat">
+          <svg class="stat-icon" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M2 2h5.6L14 8.4 8.4 14 2 7.6z"/><circle cx="5" cy="5" r="1" fill="currentColor" stroke="none"/></svg>
+          <span class="stat-value" id="stat-release">—</span>
+          <span class="stat-label">Release</span>
+        </div>
+      </a>
 
       <section class="card" id="install" aria-labelledby="install-title">
         <p id="install-title" class="card-title">Get started</p>
@@ -46,15 +70,16 @@
         <a class="btn btn-outline" href="https://github.com/omoinjm/njmtech-typing-helper#readme" target="_blank" rel="noopener noreferrer">Read the setup guide</a>
       </section>
 
-      <section class="card wide" aria-labelledby="features-title">
+      <section class="card wide" id="features" aria-labelledby="features-title">
         <p id="features-title" class="card-title">Features</p>
+        <p class="card-description">Everything the extension does, in one place</p>
         <div class="grid">
-          <article class="feature"><h3>Any typing site</h3><p>Dedicated adapters for popular sites, plus heuristics that find the one-span-per-letter passage nearly every typing site uses.</p></article>
-          <article class="feature"><h3>Human-like timing</h3><p>Per-key gaussian jitter, pauses after punctuation, and typos on neighbouring keys that get backspaced — averaging your exact WPM.</p></article>
-          <article class="feature"><h3>Trusted key events</h3><p>On Chromium, falls back to real browser-level keystrokes for sites that ignore synthetic events.</p></article>
-          <article class="feature"><h3>Pick text area</h3><p>If a site isn't detected, click the passage and the extension types exactly that.</p></article>
-          <article class="feature"><h3>Remote site rules</h3><p>When a site changes its markup, selector fixes ship from the API — no extension update needed.</p></article>
-          <article class="feature"><h3>Private</h3><p>No accounts, no analytics. The only network request fetches public site rules.</p></article>
+          <article class="feature"><div class="feature-head"><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="12" height="8" rx="1.5"/><path d="M5 7h.01M8 7h.01M11 7h.01M6 10h4"/></svg></span><h3>Any typing site</h3></div><p>Dedicated adapters for popular sites, plus heuristics that find the one-span-per-letter passage nearly every typing site uses.</p></article>
+          <article class="feature"><div class="feature-head"><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.5 1.5"/></svg></span><h3>Human-like timing</h3></div><p>Per-key gaussian jitter, pauses after punctuation, and typos on neighbouring keys that get backspaced — averaging your exact WPM.</p></article>
+          <article class="feature"><div class="feature-head"><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.8l5 2v4c0 3-2.2 5.3-5 6.4-2.8-1.1-5-3.4-5-6.4v-4z"/><path d="M5.8 8l1.6 1.6 3-3"/></svg></span><h3>Trusted key events</h3></div><p>On Chromium, falls back to real browser-level keystrokes for sites that ignore synthetic events.</p></article>
+          <article class="feature"><div class="feature-head"><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l4 10 1.6-4.4L13 7z"/></svg></span><h3>Pick text area</h3></div><p>If a site isn't detected, click the passage and the extension types exactly that.</p></article>
+          <article class="feature"><div class="feature-head"><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5h7a3 3 0 0 0 .4-6 4 4 0 0 0-7.7 1A2.5 2.5 0 0 0 4.5 12.5z"/></svg></span><h3>Remote site rules</h3></div><p>When a site changes its markup, selector fixes ship from the API — no extension update needed.</p></article>
+          <article class="feature"><div class="feature-head"><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7" width="9" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg></span><h3>Private</h3></div><p>No accounts, no analytics. The only network request fetches public site rules.</p></article>
         </div>
       </section>
 
