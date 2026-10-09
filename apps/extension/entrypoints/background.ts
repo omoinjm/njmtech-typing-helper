@@ -28,7 +28,7 @@ export default defineBackground(() => {
   async function attach(tabId: number) {
     if (!dbg) throw new Error('not supported in this browser');
     if (!(await browser.permissions.contains({ permissions: ['debugger'] as never[] }))) {
-      throw new Error('debugger permission not granted — start once from the popup');
+      throw new Error('debugger permission missing from this build');
     }
     if (!attached.has(tabId)) {
       await dbg.attach({ tabId }, '1.3');

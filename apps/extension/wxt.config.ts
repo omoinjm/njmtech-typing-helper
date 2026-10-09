@@ -18,9 +18,9 @@ export default defineConfig({
     name: 'Typing Helper',
     version,
     description: 'Types automatically on typing-practice websites at a chosen speed and accuracy.',
-    permissions: ['storage', 'activeTab', 'alarms'],
-    // chrome.debugger produces trusted key events; only Chromium has it.
-    optional_permissions: browser === 'firefox' || browser === 'safari' ? [] : ['debugger'],
+    // chrome.debugger produces trusted key events (only Chromium has it). It must be a
+    // required permission: Chrome rejects `debugger` in optional_permissions.
+    permissions: ['storage', 'activeTab', 'alarms', ...(browser === 'firefox' || browser === 'safari' ? [] : ['debugger'])],
     commands: {
       'toggle-typing': {
         suggested_key: { default: 'Alt+Shift+T' },

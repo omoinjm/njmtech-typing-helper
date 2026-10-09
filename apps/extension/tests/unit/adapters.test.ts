@@ -4,6 +4,9 @@ import { join } from 'node:path';
 import { pickAdapter } from '../../src/adapters';
 import { createGenericAdapter } from '../../src/adapters/generic';
 import { DomInjector } from '../../src/inject/dom';
+import { tenFastFingers } from '../../src/adapters/tenfastfingers';
+
+const createTenFF = () => tenFastFingers.create();
 
 const fixture = (name: string) => readFileSync(join(import.meta.dirname, '../fixtures', name), 'utf8');
 // innerHTML doesn't execute <script>, so run fixture scripts by hand.
@@ -32,7 +35,37 @@ describe('Monkeytype adapter', () => {
 });
 
 describe('10FastFingers adapter', () => {
-  it('subtracts the typed prefix of the highlighted word', () => {
+  // Markup captured from the live site (2026 redesign), class hash shortened.
+  const box = (spans: string) =>
+    `<main><div data-testid="word-box-words">${spans}</div><textarea></textarea></main>`;
+
+  it('reads from the caret span in the redesigned layout and prefers trusted keys', () => {
+    document.body.innerHTML = box(
+      `<span class="wb-x-t">against</span><span class="wb-x-t"> </span>` +
+        `<span class="wb-x-aw wb-x-ac">n</span><span class="wb-x-aw">o</span><span class="wb-x-aw"> </span>` +
+        `<span>because</span><span> </span>`,
+    );
+    const a = pickAdapter('10fastfingers.com', null);
+    expect(a.id).toBe('10fastfingers');
+    expect(a.prefersTrusted).toBe(true);
+    expect(a.remaining()).toBe('no because ');
+    expect(a.target()?.tagName).toBe('TEXTAREA');
+  });
+
+  it('treats a caret on a mistake the same way (remaining starts at the caret)', () => {
+    document.body.innerHTML = box(
+      `<span class="wb-x-aw wb-x-t">a</span><span class="wb-x-aw wb-x-e">g</span>` +
+        `<span class="wb-x-aw wb-x-ac">a</span><span class="wb-x-aw">inst</span>`,
+    );
+    expect(pickAdapter('10fastfingers.com', null).remaining()).toBe('ainst');
+  });
+
+  it('reports done when typed runs remain but the caret is gone', () => {
+    document.body.innerHTML = box(`<span class="wb-x-t">against</span><span class="wb-x-t"> </span>`);
+    expect(createTenFF().remaining()).toBe('');
+  });
+
+  it('still supports the legacy #row1 layout', () => {
     document.body.innerHTML = `<div id="row1"><span wordnr="0" class="correct">we</span>
       <span wordnr="1" class="highlight">could</span><span wordnr="2">go</span></div><input id="inputfield" value="co">`;
     const a = pickAdapter('10fastfingers.com', null);

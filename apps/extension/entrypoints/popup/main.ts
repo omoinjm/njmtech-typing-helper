@@ -66,13 +66,16 @@ async function init() {
   for (const el of [wpm, accuracy, mode]) el.addEventListener('input', save);
 
   toggle.addEventListener('click', async () => {
-    // Optional permissions can only be requested from a user gesture, so ask here.
-    if (isChromium && mode.value !== 'dom') {
-      await browser.permissions.request({ permissions: ['debugger'] as never[] }).catch(() => false);
+    if (running) {
+      await sendAllFrames({ type: 'stop' });
+      setTimeout(refresh, 150);
+      return;
     }
-    await sendAllFrames({ type: running ? 'stop' : 'start' });
-    setTimeout(refresh, 150);
+    await sendAllFrames({ type: 'start' });
+    // Close so the page regains focus; some sites pause the test while blurred.
+    window.close();
   });
+
 
   $('pick').addEventListener('click', async () => {
     await send({ type: 'pick' });

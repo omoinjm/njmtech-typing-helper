@@ -38,22 +38,36 @@ export default defineContentScript({
         requestAnimationFrame(() => setTimeout(() => (clearTimeout(t), r()), 0));
       });
 
-    async function makeInjector(adapter: SiteAdapter, trusted: boolean): Promise<Injector> {
+    // Why the last trusted attempt couldn't attach, so the final message can say so.
+    let trustedError: string | null = null;
+
+    async function makeInjector(adapter: SiteAdapter, trusted: boolean): Promise<{ injector: Injector; trusted: boolean }> {
       if (trusted) {
         const res = await TrustedInjector.attach().catch((e) => ({ ok: false, error: String(e) }));
-        if (res.ok) return new TrustedInjector(() => adapter.target());
-        toast(`Trusted mode unavailable (${res.error ?? 'unknown'}); using DOM events.`, 4000);
+        if (res.ok) return { injector: new TrustedInjector(() => adapter.target()), trusted: true };
+        trustedError = res.error ?? 'unknown error';
+        toast(`Trusted keys unavailable (${trustedError}); using DOM events.`, 4000);
       }
-      return new DomInjector(() => adapter.target());
+      return { injector: new DomInjector(() => adapter.target()), trusted: false };
     }
 
-    async function runOnce(adapter: SiteAdapter, trusted: boolean): Promise<StopReason> {
+    function stalledMessage(usedTrusted: boolean, needsTrusted: boolean): string {
+      if (needsTrusted && (import.meta.env.FIREFOX || import.meta.env.SAFARI)) {
+        return 'This site only accepts real keystrokes, which this browser does not let extensions send. Use Chrome, Edge, Brave or Opera.';
+      }
+      if (usedTrusted) return 'The page ignored trusted keystrokes too. Try "Pick text area", or report this site.';
+      if (trustedError) return `This site needs trusted keys, which are unavailable: ${trustedError}.`;
+      if (needsTrusted) return 'This site needs trusted keys. Set "Key events" to Auto or Trusted in the popup.';
+      return REASONS.stalled;
+    }
+
+    async function runOnce(adapter: SiteAdapter, trusted: boolean): Promise<{ reason: StopReason; usedTrusted: boolean }> {
       const s = await settingsItem.getValue();
-      const injector = await makeInjector(adapter, trusted);
+      const { injector, trusted: usedTrusted } = await makeInjector(adapter, trusted);
       typer = new Typer(adapter, injector, { wpm: s.wpm, accuracy: s.accuracy }, {
         rng: Math.random, now: () => performance.now(), sleep, settle,
       });
-      return typer.run();
+      return { reason: await typer.run(), usedTrusted };
     }
 
     async function start() {
@@ -68,17 +82,18 @@ export default defineContentScript({
       const canTrust = !import.meta.env.FIREFOX && !import.meta.env.SAFARI;
       const trusted = canTrust && (s.mode === 'trusted' || (s.mode === 'auto' && !!adapter.prefersTrusted));
 
+      trustedError = null;
       detail = `Typing on ${adapter.name} at ${s.wpm} WPM${trusted ? ' (trusted)' : ''} — Esc to stop`;
       toast(detail, 0);
-      let reason = await runOnce(adapter, trusted);
+      let run = await runOnce(adapter, trusted);
       // Auto mode: synthetic events were ignored, escalate to trusted events once.
-      if (reason === 'stalled' && s.mode === 'auto' && !trusted && canTrust) {
-        toast('Page ignored synthetic keys, retrying with trusted mode…', 0);
-        reason = await runOnce(adapter, true);
+      if (run.reason === 'stalled' && s.mode === 'auto' && !run.usedTrusted && !trustedError && canTrust) {
+        toast('Page ignored synthetic keys, retrying with trusted keys…', 0);
+        run = await runOnce(adapter, true);
       }
       typer = null;
-      detail = REASONS[reason];
-      toast(detail, reason === 'done' || reason === 'stopped' ? 2500 : 6000);
+      detail = run.reason === 'stalled' ? stalledMessage(run.usedTrusted, !!adapter.prefersTrusted) : REASONS[run.reason];
+      toast(detail, run.reason === 'done' || run.reason === 'stopped' ? 2500 : 8000);
     }
 
     function stop() {
