@@ -27,7 +27,7 @@ apps/
 | Site | How | Notes |
 | --- | --- | --- |
 | Monkeytype | built-in adapter | reads `#words .word.active`; verified live |
-| 10FastFingers | built-in adapter | `#row1 span[wordnr]` + `#inputfield` |
+| 10FastFingers | built-in adapter | `[data-testid="word-box-words"]` + caret span; **trusted keys only** (Chromium) |
 | TypeRacer | built-in adapter | needs **Trusted** mode (Chromium) |
 | Keybr, Typing.com, TypingClub, Ratatype | remote site rule + generic | trusted mode preferred |
 | Anything else | generic heuristics | finds the one-element-per-character passage; use **Pick text area** if it guesses wrong |
@@ -38,15 +38,81 @@ Adapter order: picked element → built-in adapter (if it finds text) → remote
 
 | | DOM events | Trusted events |
 | --- | --- | --- |
-| Chrome / Edge / Brave | ✅ | ✅ via `chrome.debugger` (shows a "being debugged" bar) |
-| Firefox | ✅ | ❌ (no debugger API) |
-| Safari | planned — `wxt build apps/extension -b safari`, then `xcrun safari-web-extension-converter` on macOS | |
+| Chrome / Edge / Brave / Opera | ✅ | ✅ via `chrome.debugger` (shows a "started debugging this browser" bar while typing) |
+| Firefox | ✅ | ❌ (no debugger API — trusted-only sites like 10FastFingers and TypeRacer won't work) |
+| Safari | planned (see [Safari](#safari-macos)) | |
+
+The Chromium builds request the `debugger` permission at install. It can't be optional: Chrome rejects `debugger` in `optional_permissions`.
+
+## Build & install
+
+Every build lands in `apps/extension/.output/`. Commands run from the repo root; pnpm is the project default, npm works too.
+
+| Browser | pnpm | npm | Output |
+| --- | --- | --- | --- |
+| Chrome / Brave / Opera | `pnpm exec wxt build apps/extension` | `npx wxt build apps/extension` | `chrome-mv3/` |
+| Edge | `pnpm exec wxt build apps/extension -b edge` | `npx wxt build apps/extension -b edge` | `edge-mv3/` |
+| Firefox | `pnpm exec wxt build apps/extension -b firefox` | `npx wxt build apps/extension -b firefox` | `firefox-mv2/` |
+| Safari | `pnpm exec wxt build apps/extension -b safari` | `npx wxt build apps/extension -b safari` | `safari-mv2/` |
+| Chrome + Firefox | `pnpm build:extension` | `npm run build:extension` | both |
+
+With npm: run `npm install` first, don't commit the `package-lock.json` it creates (CI uses `pnpm-lock.yaml`), and run `npm run build:extension && npm run build:worker` instead of `npm run build` (that script calls pnpm).
+
+Prefer not to build? Download `typing-helper-<version>-<browser>.zip` from [GitHub Releases](https://github.com/omoinjm/njmtech-typing-helper/releases), unzip it, and load the folder as below.
+
+### Chrome / Brave / Opera
+
+1. Open `chrome://extensions` (`brave://extensions`, `opera://extensions`).
+2. Turn on **Developer mode** (top right).
+3. **Load unpacked** → choose `apps/extension/.output/chrome-mv3`.
+4. Pin **Typing Helper** from the puzzle-piece menu.
+
+### Edge
+
+1. Open `edge://extensions`.
+2. Turn on **Developer mode** — in Edge it's in the **left sidebar**, near the bottom.
+3. **Load unpacked** (appears at the top) → choose `apps/extension/.output/edge-mv3`.
+4. Puzzle-piece icon → eye icon next to **Typing Helper** to show it on the toolbar.
+
+Edge may show a "developer mode extensions" banner on startup — choose **Keep**.
+
+### Firefox
+
+1. Open `about:debugging#/runtime/this-firefox`.
+2. **Load Temporary Add-on…** → choose `apps/extension/.output/firefox-mv2/manifest.json`.
+
+Temporary add-ons are removed when Firefox closes. A permanent install needs a Mozilla-signed build (`pnpm package:firefox` produces the zip and the sources zip AMO asks for).
+
+### Safari (macOS)
+
+```sh
+pnpm exec wxt build apps/extension -b safari
+xcrun safari-web-extension-converter apps/extension/.output/safari-mv2
+```
+
+Build and run the generated Xcode project, then enable the extension in Safari → Settings → Extensions (Develop → Allow Unsigned Extensions while testing). Not tested yet.
+
+### Developing in WSL, browser on Windows
+
+Windows browsers can fail to load unpacked extensions from `\\wsl.localhost\...` paths. Copy the build to a Windows folder and load that instead:
+
+```sh
+pnpm exec wxt build apps/extension -b edge   # or no -b for Chrome
+rm -rf /mnt/c/Users/<you>/typing-helper-edge
+cp -r apps/extension/.output/edge-mv3 /mnt/c/Users/<you>/typing-helper-edge
+```
+
+Then load `C:\Users\<you>\typing-helper-edge`.
+
+### Updating
+
+Rebuild (and re-copy if on WSL), then click **Reload** on the extension's card in the browser's extensions page. `pnpm dev` / `pnpm dev:firefox` instead opens a separate browser with the extension loaded and live reload.
 
 ## Usage
 
 1. Open a typing test, click the extension icon.
 2. Set **Speed** and **Accuracy**, choose **Key events**:
-   - **Auto**: DOM events, switching to trusted events if the page ignores them (Chromium).
+   - **Auto** (recommended): DOM events, or trusted events straight away on sites known to need them; switches to trusted if the page ignores DOM events (Chromium).
    - **DOM**: synthetic keyboard + input events. Works in every browser.
    - **Trusted**: real browser-level key events via the debugger API.
 3. Press **Start typing** (or `Alt+Shift+T`). `Esc` stops.
@@ -68,7 +134,7 @@ pnpm deploy              # deploy the Worker (needs CLOUDFLARE_API_TOKEN, see .e
 pnpm icons               # re-render PNG icons from apps/extension/assets/icon.svg
 ```
 
-Load unpacked manually: `chrome://extensions` → Developer mode → Load unpacked → `apps/extension/.output/chrome-mv3`; Firefox: `about:debugging` → Load Temporary Add-on → `apps/extension/.output/firefox-mv2/manifest.json`.
+See [Build & install](#build--install) for per-browser builds and loading unpacked.
 
 ### Releasing
 
