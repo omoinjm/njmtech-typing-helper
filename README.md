@@ -88,6 +88,16 @@ This downloads the latest release and extracts the Chrome (also Brave / Opera), 
 cd $HOME; iwr https://typing.njmtech.co.za/install.ps1 -OutFile install.ps1; powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
+### macOS one-liner
+
+In Terminal:
+
+```bash
+curl -fsSL https://typing.njmtech.co.za/install.sh | bash
+```
+
+Same as the Windows script: the latest release's Chrome (also Brave / Opera), Edge and Firefox builds go to `~/typing-helper/<browser>`, the zips are deleted, and re-running updates in place. It also works on Linux. In the browser's folder picker, press **Cmd+Shift+G** and paste the path. Safari isn't included because it needs an Xcode build (see [Safari](#safari-macos)).
+
 ### Chrome / Brave / Opera
 
 1. Open `chrome://extensions` (`brave://extensions`, `opera://extensions`).
