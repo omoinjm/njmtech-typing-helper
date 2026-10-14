@@ -68,6 +68,12 @@ In PowerShell:
 irm https://typing.njmtech.co.za/install.ps1 | iex
 ```
 
+Or press **Win + R** and paste:
+
+```
+powershell -NoExit -c "irm https://typing.njmtech.co.za/install.ps1 | iex"
+```
+
 This downloads the latest release and extracts the Chrome (also Brave / Opera), Edge and Firefox builds to `%USERPROFILE%\typing-helper\<browser>`. The zips are deleted afterwards. Load the folder for your browser as below. Re-running the command updates the folders in place, so after an update just click **Reload** on the extension card. If you'd rather read the script first, save it and run it locally:
 
 ```powershell
