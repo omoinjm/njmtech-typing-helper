@@ -36,3 +36,19 @@ async function loadRepoStats() {
 }
 
 loadRepoStats();
+
+// Copy buttons for the Win + R install commands.
+for (const button of document.querySelectorAll('[data-copy]')) {
+  button.addEventListener('click', async () => {
+    const text = document.getElementById(button.dataset.copy)?.textContent ?? '';
+    try {
+      await navigator.clipboard.writeText(text);
+      button.textContent = 'Copied';
+    } catch (err) {
+      console.error('[website] Copy failed:', err);
+      button.textContent = 'Press Ctrl+C';
+      getSelection().selectAllChildren(document.getElementById(button.dataset.copy));
+    }
+    setTimeout(() => { button.textContent = 'Copy'; }, 1500);
+  });
+}

@@ -66,6 +66,19 @@
           <li><span>Chrome/Edge: <code>chrome://extensions</code> → Developer mode → Load unpacked.<br />Firefox: <code>about:debugging</code> → Load Temporary Add-on.</span></li>
           <li><span>Open a typing test, click the extension, press <strong>Start typing</strong>.</span></li>
         </ol>
+        <div class="win-install">
+          <p class="label">Windows shortcut</p>
+          <p class="win-hint">Press <kbd>Win</kbd> + <kbd>R</kbd>, paste, and press Enter. It installs every build to <code>%USERPROFILE%\typing-helper</code>.</p>
+          <div class="cmd">
+            <code id="cmd-visible">powershell -NoExit -c "irm https://typing.njmtech.co.za/install.ps1 | iex"</code>
+            <button type="button" class="copy" data-copy="cmd-visible" aria-label="Copy install command">Copy</button>
+          </div>
+          <p class="win-hint">Or run it hidden, and open the install folder when it's done (errors stay hidden too):</p>
+          <div class="cmd">
+            <code id="cmd-hidden">powershell -w h irm typing.njmtech.co.za/install.ps1|iex;ii ~\typing-helper</code>
+            <button type="button" class="copy" data-copy="cmd-hidden" aria-label="Copy hidden install command">Copy</button>
+          </div>
+        </div>
         <a class="btn btn-primary" href="https://github.com/omoinjm/njmtech-typing-helper/releases/latest" target="_blank" rel="noopener noreferrer">Download latest release</a>
         <a class="btn btn-outline" href="https://github.com/omoinjm/njmtech-typing-helper#readme" target="_blank" rel="noopener noreferrer">Read the setup guide</a>
       </section>
