@@ -1,5 +1,5 @@
 #!/bin/bash
-# Typing Helper installer for macOS (also works on Linux).
+# Typing Helper installer for macOS and Linux.
 #
 #   curl -fsSL https://typing.njmtech.co.za/install.sh | bash
 #
@@ -17,6 +17,12 @@ main() {
     local root="$HOME/typing-helper"
     local api="https://api.github.com/repos/$repo/releases/latest"
     local json tag installed='' browser url zip staging target
+
+    # macOS always has unzip; minimal Linux installs often don't.
+    if ! command -v unzip >/dev/null 2>&1; then
+        echo "unzip is required. Install it first (e.g. sudo apt install unzip, sudo dnf install unzip)." >&2
+        return 1
+    fi
 
     if ! json=$(curl -fsSL -H 'Accept: application/vnd.github+json' -H 'User-Agent: typing-helper-installer' "$api"); then
         echo "Could not fetch the latest release from GitHub." >&2
@@ -73,7 +79,11 @@ main() {
         echo "    $root/firefox/manifest.json  (removed when Firefox closes)" ;;
     esac
     echo
-    echo "Tip: in the folder picker, press Cmd+Shift+G and paste the path."
+    if [ "$(uname -s)" = Darwin ]; then
+        echo "Tip: in the folder picker, press Cmd+Shift+G and paste the path."
+    else
+        echo "Tip: in the folder picker, press Ctrl+L and paste the path."
+    fi
     echo "Already loaded? Just click Reload on the extension card to pick up the update."
 }
 
