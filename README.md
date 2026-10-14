@@ -60,6 +60,20 @@ With npm: run `npm install` first, don't commit the `package-lock.json` it creat
 
 Prefer not to build? Download `typing-helper-<version>-<browser>.zip` from [GitHub Releases](https://github.com/omoinjm/njmtech-typing-helper/releases), unzip it, and load the folder as below.
 
+### Windows one-liner
+
+In PowerShell:
+
+```powershell
+irm https://typing.njmtech.co.za/install.ps1 | iex
+```
+
+This downloads the latest release and extracts the Chrome (also Brave / Opera), Edge and Firefox builds to `%USERPROFILE%\typing-helper\<browser>`. The zips are deleted afterwards. Load the folder for your browser as below. Re-running the command updates the folders in place, so after an update just click **Reload** on the extension card. If you'd rather read the script first, save it and run it locally:
+
+```powershell
+cd $HOME; iwr https://typing.njmtech.co.za/install.ps1 -OutFile install.ps1; powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
 ### Chrome / Brave / Opera
 
 1. Open `chrome://extensions` (`brave://extensions`, `opera://extensions`).
