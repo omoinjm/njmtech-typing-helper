@@ -105,6 +105,40 @@ describe('Typer', () => {
     expect(reason).toBe('stalled');
   });
 
+  it('types one character per user key when driven by nextKey', async () => {
+    const rec = new Recorder();
+    const src: TextSource = { remaining: () => text.slice(rec.out.length), snapshot: () => text };
+    let presses = 3;
+    const reason = await new Typer(src, rec, { wpm: 60, accuracy: 1 }, {
+      rng: seededRng(10),
+      ...fakeClock(),
+      nextKey: async () => presses-- > 0,
+    }).run();
+    expect(reason).toBe('stopped');
+    expect(rec.out).toBe('the');
+  });
+
+  it('pauses while held and resumes from the live text', async () => {
+    const rec = new Recorder();
+    const src: TextSource = { remaining: () => text.slice(rec.out.length), snapshot: () => text };
+    let holds = 0;
+    const reason = await new Typer(src, rec, { wpm: 60, accuracy: 1 }, {
+      rng: seededRng(11),
+      ...fakeClock(),
+      hold: async () => {
+        // The user types "the " themselves while auto-typing is held.
+        if (rec.out === 't' && holds++ === 0) {
+          rec.out = 'the ';
+          return true;
+        }
+        return false;
+      },
+    }).run();
+    expect(reason).toBe('done');
+    expect(rec.out).toBe(text);
+    expect(rec.keys.join('')).toBe('t' + text.slice(4));
+  });
+
   it('stops on request', async () => {
     const rec = new Recorder();
     const src: TextSource = { remaining: () => null, snapshot: () => text };

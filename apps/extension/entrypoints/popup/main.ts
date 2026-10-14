@@ -1,13 +1,21 @@
 import { browser } from 'wxt/browser';
 import type { Message, Status } from '../../src/messages';
-import { settingsItem, type InjectMode } from '../../src/settings';
+import { settingsItem, type InjectMode, type UserKeysMode } from '../../src/settings';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const wpm = $<HTMLInputElement>('wpm');
 const accuracy = $<HTMLInputElement>('accuracy');
 const mode = $<HTMLSelectElement>('mode');
+const userKeys = $<HTMLSelectElement>('userKeys');
 const toggle = $<HTMLButtonElement>('toggle');
 let running = false;
+
+const USER_KEYS_HINTS: Record<UserKeysMode, string> = {
+  off: 'Your keys reach the page as normal. Esc stops.',
+  drive: "Nothing types on its own. Any key you press types the next correct character.",
+  alongside: 'Types at your speed setting. Your keys are blocked so they can\'t interfere.',
+  takeover: 'Your keys go through and typing pauses. It resumes from there when you stop.',
+};
 
 const isChromium = !import.meta.env.FIREFOX && !import.meta.env.SAFARI;
 if (!isChromium) mode.querySelector<HTMLOptionElement>('option[value="trusted"]')!.disabled = true;
@@ -52,7 +60,9 @@ async function save() {
     wpm: Number(wpm.value),
     accuracy: Number(accuracy.value) / 100,
     mode: mode.value as InjectMode,
+    userKeys: userKeys.value as UserKeysMode,
   });
+  $('userKeysHint').textContent = USER_KEYS_HINTS[userKeys.value as UserKeysMode];
   $('wpmOut').textContent = wpm.value;
   $('accOut').textContent = accuracy.value;
 }
@@ -62,8 +72,9 @@ async function init() {
   wpm.value = String(s.wpm);
   accuracy.value = String(Math.round(s.accuracy * 100));
   mode.value = s.mode;
+  userKeys.value = s.userKeys ?? 'off';
   await save();
-  for (const el of [wpm, accuracy, mode]) el.addEventListener('input', save);
+  for (const el of [wpm, accuracy, mode, userKeys]) el.addEventListener('input', save);
 
   toggle.addEventListener('click', async () => {
     if (running) {

@@ -29,6 +29,13 @@ export interface TyperDeps {
   sleep: (ms: number) => Promise<void>;
   /** Called after a keystroke so the page can re-render before we re-read it. */
   settle?: () => Promise<void>;
+  /**
+   * Paces keystrokes by the user instead of the WPM timer: awaited before each
+   * character; resolves false to stop.
+   */
+  nextKey?: () => Promise<boolean>;
+  /** Awaited before each keystroke; resolves true if it paused (e.g. the user was typing). */
+  hold?: () => Promise<boolean>;
 }
 
 export type StopReason = 'done' | 'stopped' | 'stalled' | 'no-text';
@@ -77,7 +84,15 @@ export class Typer {
 
     try {
       while (!this.stopped) {
-        await wait(scheduler.nextDelay(prev));
+        if (this.deps.nextKey) {
+          if (!(await this.deps.nextKey())) break;
+          due = now();
+        } else {
+          await wait(scheduler.nextDelay(prev));
+        }
+        if (this.stopped) break;
+        // Restart the timeline after a pause so we don't burst to catch up.
+        if (this.deps.hold && (await this.deps.hold())) due = now();
         if (this.stopped) break;
         if (this.source.isFinished?.()) return 'done';
 

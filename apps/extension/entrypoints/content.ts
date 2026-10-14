@@ -6,7 +6,8 @@ import { Typer, type Injector, type StopReason } from '../src/engine/typer';
 import { DomInjector } from '../src/inject/dom';
 import { TrustedInjector } from '../src/inject/trusted';
 import type { Message, Status } from '../src/messages';
-import { settingsItem } from '../src/settings';
+import { settingsItem, type UserKeysMode } from '../src/settings';
+import { createUserKeys, type UserKeys } from '../src/userkeys';
 import { toast } from '../src/toast';
 import { pickElement } from '../src/picker';
 import { siteRulesItem, type SiteRule } from '../src/site-rules';
@@ -24,6 +25,8 @@ export default defineContentScript({
   runAt: 'document_idle',
   main() {
     let typer: Typer | null = null;
+    // The current run's handler for the user's own keys (null when "off").
+    let keys: UserKeys | null = null;
     let picked: Element | null = null;
     let detail = '';
     let rules: SiteRule[] = [];
@@ -63,11 +66,37 @@ export default defineContentScript({
 
     async function runOnce(adapter: SiteAdapter, trusted: boolean): Promise<{ reason: StopReason; usedTrusted: boolean }> {
       const s = await settingsItem.getValue();
-      const { injector, trusted: usedTrusted } = await makeInjector(adapter, trusted);
+      const userKeys = s.userKeys ?? 'off';
+      const now = () => performance.now();
+      const made = await makeInjector(adapter, trusted);
+      keys = userKeys === 'off' ? null : createUserKeys(userKeys, { now, sleep });
+      keys?.install();
+      const injector = keys ? keys.wrap(made.injector) : made.injector;
       typer = new Typer(adapter, injector, { wpm: s.wpm, accuracy: s.accuracy }, {
-        rng: Math.random, now: () => performance.now(), sleep, settle,
+        rng: Math.random, now, sleep, settle,
+        nextKey: userKeys === 'drive' ? keys!.nextKey : undefined,
+        hold: userKeys === 'takeover' ? keys!.hold : undefined,
       });
-      return { reason: await typer.run(), usedTrusted };
+      try {
+        return { reason: await typer.run(), usedTrusted: made.trusted };
+      } finally {
+        keys?.dispose();
+        keys = null;
+      }
+    }
+
+    function runDetail(adapter: SiteAdapter, wpm: number, trusted: boolean, userKeys: UserKeysMode): string {
+      const how = trusted ? ' (trusted)' : '';
+      switch (userKeys) {
+        case 'drive':
+          return `Your keys type on ${adapter.name}${how}. Press any key for the next character, Esc to stop`;
+        case 'alongside':
+          return `Typing on ${adapter.name} at ${wpm} WPM${how}, ignoring your keys. Esc to stop`;
+        case 'takeover':
+          return `Typing on ${adapter.name} at ${wpm} WPM${how}, pauses while you type. Esc to stop`;
+        default:
+          return `Typing on ${adapter.name} at ${wpm} WPM${how} — Esc to stop`;
+      }
     }
 
     async function start() {
@@ -83,11 +112,13 @@ export default defineContentScript({
       const trusted = canTrust && (s.mode === 'trusted' || (s.mode === 'auto' && !!adapter.prefersTrusted));
 
       trustedError = null;
-      detail = `Typing on ${adapter.name} at ${s.wpm} WPM${trusted ? ' (trusted)' : ''} — Esc to stop`;
+      const userKeys = s.userKeys ?? 'off';
+      detail = runDetail(adapter, s.wpm, trusted, userKeys);
       toast(detail, 0);
       let run = await runOnce(adapter, trusted);
       // Auto mode: synthetic events were ignored, escalate to trusted events once.
-      if (run.reason === 'stalled' && s.mode === 'auto' && !run.usedTrusted && !trustedError && canTrust) {
+      // Not when the user drives: the retry would silently wait for keys again.
+      if (run.reason === 'stalled' && userKeys !== 'drive' && s.mode === 'auto' && !run.usedTrusted && !trustedError && canTrust) {
         toast('Page ignored synthetic keys, retrying with trusted keys…', 0);
         run = await runOnce(adapter, true);
       }
@@ -98,6 +129,7 @@ export default defineContentScript({
 
     function stop() {
       typer?.stop();
+      keys?.cancel();
     }
 
     addEventListener(
@@ -134,7 +166,7 @@ export default defineContentScript({
           const status: Status = {
             running: !!typer,
             adapter: adapter.remaining() || adapter.snapshot() ? adapter.name : 'No text detected',
-            detail,
+            detail: keys?.holding ? 'Paused while you type…' : detail,
             typed: typer?.typed ?? 0,
           };
           sendResponse(status);

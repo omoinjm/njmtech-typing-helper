@@ -156,6 +156,19 @@ Rebuild (and re-copy if on WSL), then click **Reload** on the extension's card i
 3. Press **Start typing** (or `Alt+Shift+T`). `Esc` stops.
 4. If no text is found, press **Pick text area** and click the passage.
 
+### While I press keys
+
+The popup's **While I press keys** setting decides what your own keys do during a run (`Esc` always stops):
+
+| Option | What happens |
+| --- | --- |
+| **Off** (default) | Your keys reach the page as normal and mix with the auto-typed text. |
+| **My keys drive the typing** | Nothing types on its own. Every key you press is replaced with the next correct character, so you set the pace. |
+| **Keep typing, ignore my keys** | Types at your Speed setting; your keys are blocked so they can't break the run. |
+| **Pause while I type** | Your keys go through and auto-typing pauses, then resumes ~0.8 s after your last key from wherever the text now is. |
+
+Shortcuts with Ctrl, Alt or Cmd, and modifier keys on their own, are never blocked. "Pause while I type" picks up your progress on sites that show which characters are typed (Monkeytype, 10FastFingers, and most char-by-char typing tests). On TypeRacer, and on any passage without per-character progress, the extension types from its own copy and can't see what you typed, so it will repeat it.
+
 ## Development
 
 ```sh

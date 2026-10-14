@@ -51,6 +51,17 @@
           </select>
         </div>
 
+        <div class="field">
+          <label for="userKeys">While I press keys</label>
+          <select id="userKeys" aria-describedby="userKeysHint">
+            <option value="off">Off: my keys go through</option>
+            <option value="drive">My keys drive the typing</option>
+            <option value="alongside">Keep typing, ignore my keys</option>
+            <option value="takeover">Pause while I type</option>
+          </select>
+          <p id="userKeysHint" class="hint"></p>
+        </div>
+
 
         <button id="toggle" class="btn btn-primary" type="button">Start typing</button>
         <button id="pick" class="btn btn-outline" type="button">Pick text area</button>
